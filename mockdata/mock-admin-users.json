@@ -1,0 +1,14 @@
+[
+  {
+    "loginID": "Dean_P",
+    "role": "ADMIN",
+    "active": true,
+    "createdDate": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "loginID": "Jenny_P",
+    "role": "USER",
+    "active": true,
+    "createdDate": "2026-01-01T00:00:00.000Z"
+  }
+]

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1e3a5f" />
+  <title>Todo Lists</title>
+  <link rel="icon" type="image/x-icon" href="./favicon.ico" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <link rel="stylesheet" href="./todo.css" />
+  <script src="./config.js"></script>
+  <script src="./apiClient.js"></script>
+</head>
+<body>
+
+<!-- ===================== HEADER ===================== -->
+<header>
+  <div class="header-left">
+    <span id="appTitle">Todo Lists</span>
+    <span id="envBadge" class="env-badge" style="display:none;"></span>
+  </div>
+  <div class="header-right">
+    <span id="versionBadge" class="version-badge"></span>
+    <button class="btn btn-ghost" onclick="logout()" style="padding:5px 12px; font-size:12px;">Logout</button>
+    <button id="btnAdmin" class="btn btn-ghost" onclick="openAdminModal()" style="display:none; padding:5px 12px; font-size:12px;">Admin</button>
+  </div>
+</header>
+
+<!-- ===================== MAIN ===================== -->
+<div class="page">
+
+  <!-- =========== LISTS VIEW =========== -->
+  <div id="listsView">
+    <div class="lists-toolbar">
+      <h2>My Lists</h2>
+      <button class="btn btn-primary" onclick="openCreateListModal()">+ New List</button>
+    </div>
+    <div id="listsGrid" class="lists-grid"></div>
+  </div>
+
+  <!-- =========== ITEMS VIEW =========== -->
+  <div id="itemsView">
+    <div class="items-toolbar">
+      <div class="items-toolbar-left">
+        <button class="btn btn-secondary" onclick="showListsView()">&#8592; Back</button>
+        <span id="currentListTitle"></span>
+      </div>
+      <button class="btn btn-secondary" style="font-size:12px;" onclick="openRenameListModal()">Rename</button>
+      <button class="btn btn-danger" style="font-size:12px;" onclick="confirmDeleteList()">Delete List</button>
+    </div>
+
+    <div class="add-item-row">
+      <input id="addItemInput" class="add-item-input" type="text" placeholder="Add a new task and press Enter..." maxlength="500"
+        onkeydown="if(event.key==='Enter') addItem()" />
+      <button class="btn btn-primary" onclick="addItem()">Add</button>
+    </div>
+
+    <div id="itemsList" class="items-list"></div>
+  </div>
+
+</div>
+
+<!-- ===================== MODALS ===================== -->
+
+<!-- Create / Rename List -->
+<div id="listFormModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3 id="listFormTitle">New List</h3>
+    <div class="form-group">
+      <label for="listNameInput">List Name *</label>
+      <input id="listNameInput" type="text" maxlength="100" placeholder="e.g. Shopping"
+        onkeydown="if(event.key==='Enter') saveListForm(this)" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeListFormModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveListForm(this)">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Delete (generic) -->
+<div id="confirmModal" class="modal-overlay">
+  <div class="modal-box confirm-modal-box">
+    <h3>Confirm Delete</h3>
+    <p id="confirmMsg"></p>
+    <div class="modal-actions" style="justify-content:center;">
+      <button class="btn btn-secondary" onclick="closeConfirmModal()">Cancel</button>
+      <button id="btnConfirmYes" class="btn btn-danger">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Admin Panel -->
+<div id="adminModal" class="modal-overlay">
+  <div class="modal-box admin-modal-box" style="max-width:680px;">
+    <h3 style="margin:0 0 16px;">User Management</h3>
+    <div style="margin-bottom:12px;">
+      <button class="btn btn-primary" onclick="openAdminUserForm()">+ Add User</button>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>Login ID</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="adminUsersBody"></tbody>
+      </table>
+    </div>
+    <div class="modal-actions" style="margin-top:16px;">
+      <button class="btn btn-secondary" onclick="closeAdminModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Admin: Add/Edit User -->
+<div id="adminUserFormModal" class="modal-overlay" style="z-index:600;">
+  <div class="modal-box" style="max-width:400px;">
+    <h3 id="adminUserFormTitle">Add User</h3>
+    <div class="form-group" id="loginIdGroup">
+      <label>Login ID *</label>
+      <input id="adminLoginId" autocomplete="off" />
+    </div>
+    <div class="form-group">
+      <label>Role *</label>
+      <select id="adminRole">
+        <option value="USER" selected>USER</option>
+        <option value="ADMIN">ADMIN</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Status</label>
+      <select id="adminActive">
+        <option value="true" selected>Active</option>
+        <option value="false">Inactive</option>
+      </select>
+    </div>
+    <div class="form-group" id="adminPasswordGroup">
+      <label>Password *</label>
+      <input id="adminPassword" type="password" autocomplete="new-password" />
+    </div>
+    <div class="form-group" id="adminPasswordConfirmGroup">
+      <label>Confirm Password *</label>
+      <input id="adminPasswordConfirm" type="password" autocomplete="new-password" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeAdminUserForm()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAdminUser(this)">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Admin: Change Password -->
+<div id="adminPasswordModal" class="modal-overlay" style="z-index:600;">
+  <div class="modal-box" style="max-width:400px;">
+    <h3>Change Password</h3>
+    <p id="adminPwdTarget" style="font-size:13px; color:#555; margin:0 0 16px;"></p>
+    <div class="form-group">
+      <label>New Password *</label>
+      <input id="adminNewPassword" type="password" autocomplete="new-password" />
+    </div>
+    <div class="form-group">
+      <label>Confirm Password *</label>
+      <input id="adminConfirmPassword" type="password" autocomplete="new-password" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeAdminPasswordModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAdminPassword(this)">Update</button>
+    </div>
+  </div>
+</div>
+
+<!-- PWA Install Banner -->
+<div id="pwaBanner" style="display:none; position:fixed; bottom:0; left:0; right:0; background:#1e3a5f; color:#fff; padding:12px 16px; align-items:center; justify-content:space-between; gap:12px; z-index:9999; box-shadow:0 -2px 8px rgba(0,0,0,0.4);">
+  <span style="font-size:14px;">Install <strong>Todo Lists</strong> as an app</span>
+  <div style="display:flex; gap:8px; flex-shrink:0;">
+    <button id="btnPwaInstall" style="background:#2563eb; color:#fff; border:none; padding:7px 14px; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px;">Install</button>
+    <button id="btnPwaDismiss" style="background:transparent; color:#94a3b8; border:1px solid #4b5563; padding:7px 12px; border-radius:6px; cursor:pointer; font-size:13px;">Not now</button>
+  </div>
+</div>
+
+<script src="./todo.js"></script>
+
+<script>
+  // ENV badge
+  (function () {
+    const env = window.APP_CONFIG?.ENVIRONMENT;
+    if (!env || env === 'PRODUCTION') return;
+    const badge = document.getElementById('envBadge');
+    badge.textContent = env;
+    badge.style.display = 'inline';
+    const colours = { STAGING: '#f59e0b', LOCAL: '#6b7280' };
+    badge.style.background = colours[env] || '#6b7280';
+  })();
+
+  // Version badge
+  fetch('./version.json').then(r => r.json()).then(v => {
+    if (v.build) document.getElementById('versionBadge').textContent = `#${v.build}`;
+  }).catch(() => {});
+
+  // PWA install banner
+  let _deferredInstall = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    _deferredInstall = e;
+    if (!sessionStorage.getItem('pwa-dismissed')) {
+      document.getElementById('pwaBanner').style.display = 'flex';
+    }
+  });
+  document.getElementById('btnPwaInstall').addEventListener('click', () => {
+    if (!_deferredInstall) return;
+    _deferredInstall.prompt();
+    _deferredInstall.userChoice.then(() => {
+      _deferredInstall = null;
+      document.getElementById('pwaBanner').style.display = 'none';
+    });
+  });
+  document.getElementById('btnPwaDismiss').addEventListener('click', () => {
+    document.getElementById('pwaBanner').style.display = 'none';
+    sessionStorage.setItem('pwa-dismissed', '1');
+  });
+
+  // Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+[
+  {
+    "PK": "LIST#list-001",
+    "SK": "METADATA",
+    "entityType": "LIST",
+    "listId": "list-001",
+    "name": "Shopping",
+    "createdBy": "Dean_P",
+    "createdDate": "2026-01-01T00:00:00.000Z",
+    "itemCount": 4
+  },
+  {
+    "PK": "LIST#list-002",
+    "SK": "METADATA",
+    "entityType": "LIST",
+    "listId": "list-002",
+    "name": "Work Tasks",
+    "createdBy": "Dean_P",
+    "createdDate": "2026-01-02T00:00:00.000Z",
+    "itemCount": 3
+  },
+  {
+    "PK": "LIST#list-003",
+    "SK": "METADATA",
+    "entityType": "LIST",
+    "listId": "list-003",
+    "name": "Home Projects",
+    "createdBy": "Jenny_P",
+    "createdDate": "2026-01-03T00:00:00.000Z",
+    "itemCount": 2
+  }
+]
