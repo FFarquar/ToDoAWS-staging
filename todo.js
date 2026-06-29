@@ -17,6 +17,13 @@ const userLoginID = localStorage.getItem('userLoginID') || '';
   if (userRole === 'ADMIN') {
     document.getElementById('btnAdmin').style.display = 'inline-flex';
   }
+
+  // Prevent back button from leaving this page
+  history.pushState(null, '', location.href);
+  window.addEventListener('popstate', () => {
+    history.pushState(null, '', location.href);
+  });
+
   loadLists();
 })();
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'todoaws-v2';
+const CACHE_NAME = 'todoaws-v3';
 
 const PRECACHE_ASSETS = [
   './login.html',
